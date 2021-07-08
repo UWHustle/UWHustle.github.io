@@ -11,6 +11,12 @@ Resources for working with persistent memory (PMem) on CloudLab hosts and the Hu
 
 This section describes how to provision a host with PMem. If you are simply emulating PMem in DRAM, you can skip to the next section.
 
+0. (Required if the device is already provisioned in a different mode) Clear existing namespaces and goals.
+    ```bash
+    ndctl destroy-namespace -f all
+    ipmctl delete -goal
+    systemctl reboot
+    ```
 1. Create a memory allocation goal. To configure all the PMem capacity in Memory Mode, run the following command.
 
     ```bash
@@ -29,6 +35,9 @@ This section describes how to provision a host with PMem. If you are simply emul
 
     ```bash
     sudo ipmctl show -memoryresources
+    ```
+    ```bash
+    sudo ndctl list -Ni
     ```
 
 For more information, refer to [IPMCTL User Guide](https://docs.pmem.io/ipmctl-user-guide/).
