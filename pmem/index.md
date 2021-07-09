@@ -11,13 +11,13 @@ Resources for working with persistent memory (PMem) on CloudLab hosts and the Hu
 
 This section describes how to provision a host with PMem. If you are simply emulating PMem in DRAM, you can skip to the next section.
 
-0. (Required if the device is already provisioned in a different mode) Clear existing namespaces and goals.
+0. If the device is already provisioned in a different mode, clear existing namespaces and goals.
     ```bash
     ndctl destroy-namespace -f all
     ipmctl delete -goal
     systemctl reboot
     ```
-1. Create a memory allocation goal. To configure all the PMem capacity in Memory Mode, run the following command.
+1. Create a new memory allocation goal. To configure all the PMem capacity in Memory Mode, run the following command.
 
     ```bash
     sudo ipmctl create -goal MemoryMode=100
@@ -36,11 +36,20 @@ This section describes how to provision a host with PMem. If you are simply emul
     ```bash
     sudo ipmctl show -memoryresources
     ```
+4. Create new namespaces if necessary.
+
+    First list existing namespaces and regions.
     ```bash
     sudo ndctl list -Ni
+    sudo ndctl list --regions
     ```
+    To create a namespace on region1, run the following command.
+    ```bash
+    sudo ndctl create-namespace -r region1 --mode fsdax -M dev
+    ```
+    The above command creates a namespace in region1 in the fsdax mode, with page metadata stored on the device.
 
-For more information, refer to [IPMCTL User Guide](https://docs.pmem.io/ipmctl-user-guide/).
+For more information, refer to [IPMCTL User Guide](https://docs.pmem.io/ipmctl-user-guide/) and the [NDCTL User Guide](https://docs.pmem.io/ndctl-user-guide/).
 
 ## Emulating PMem
 
@@ -133,5 +142,5 @@ This section describes how to create and mount a new filesystem on a `/dev/pmem{
      ```
      /dev/pmem0 on /mnt/pmem0 type ext4 (rw,relatime,dax)
      ```
-You can now write code that uses the `/mnt/pmem{0}` filesystem as a PMem store. For more information, refer to [Linux Environments - Persistent Memory Documentation](https://docs.pmem.io/persistent-memory/getting-started-guide/creating-development-environments/linux-environments).
+You can now write code that uses the `/mnt/pmem{0}` filesystem as a PMem store. The [Persistent Memory Development Kit (PMDK)](https://pmem.io/pmdk/) provides a collection of libraries to program PMem in DAX mode and also has [coding examples](https://github.com/pmem/pmdk/tree/master/src/examples) to help get started.
 
